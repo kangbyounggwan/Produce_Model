@@ -12,13 +12,13 @@ from ae_model import AutoEncoder
 
 basedir = os.path.abspath(os.path.dirname(__file__))
 MODEL_FILE_PATH = basedir + '/ModelFiles/'
-
+import wandb
 
 AE_loss = nn.MSELoss()
 
 
 
-def train(model, Loss, optimizer, num_epochs,train_loader,device):
+def train(model, Loss, optimizer, num_epochs,train_loader,device,model_spot):
     print(num_epochs)
     print('a')
     train_loss_arr = []
@@ -66,23 +66,21 @@ def train(model, Loss, optimizer, num_epochs,train_loader,device):
             print('예측',outputs[0])
             test_loss = test_loss
             test_loss_arr.append(test_loss)
+            wandb.log({"loss": test_loss})
             if best_test_loss >= test_loss:
                 best_test_loss = test_loss
                 early_stop = 0
                 best_epoch = epoch
+                torch.save(model, MODEL_FILE_PATH + model_spot + '_AE_model.pt')
 
-                print('Epoch [{}/{}], Train Loss: {:.4f}, Test Loss: {:.4f} *'.format(epoch, num_epochs, epoch_loss / len(train_loader.dataset),
+                print('Epoch [{}/{}], Train Loss: {:.10f}, Test Loss: {:.10f} *'.format(epoch, num_epochs, epoch_loss / len(train_loader.dataset),
                                                                                       test_loss))
             else:
                 early_stop += 1
-                print('Epoch [{}/{}], Train Loss: {:.4f}, Test Loss: {:.4f}'.format(epoch, num_epochs, epoch_loss / len(train_loader.dataset),
+                print('Epoch [{}/{}], Train Loss: {:.10f}, Test Loss: {:.10f}'.format(epoch, num_epochs, epoch_loss / len(train_loader.dataset),
                                                                                     test_loss))
 
 
         if early_stop >= early_stop_max:
             break
 
-    current_model_path = MODEL_FILE_PATH + format('ae[{}].model'.format(best_epoch))
-    model_write_file = open(current_model_path, "wb")
-    joblib.dump(model, model_write_file)
-    model_write_file.close()

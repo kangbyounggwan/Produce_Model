@@ -4,7 +4,7 @@ import numpy as np
 import pandas as pd
 import math
 import pdb
-
+import matplotlib.pyplot as plt
 
 # 다변량 추출
 def fft_t_sum(raw):
@@ -16,13 +16,19 @@ def fft_t_sum(raw):
     col_var = []
     col_kurt = []
     col_len = []
-    # fft 변환
     for i in range(len(raw)):
-        raw_ = np.array(raw[i])
-        fs = 8000
-        optimiz = raw_ / fs
 
-        frequency_raw = np.fft.rfft(optimiz, n=8000)
+        fmax = 16000  # sampling frequency 1000 Hz
+        dt = 0.01       # sampling period
+        N = 16000    # length of signal
+
+        # Fourier spectrum
+        xf = np.fft.fft(raw[i])
+        frequency_raw =np.abs(xf[5:int(N / 2)])
+
+        # plt.figure(figsize=(16, 8))
+        # plt.plot(frequency_raw)
+        # plt.show()
         # rms 변환
         rms_result = rms(raw[i])
         # 값 저장
@@ -32,13 +38,13 @@ def fft_t_sum(raw):
         skew_ = skew(frequency_raw)
         var = np.var(frequency_raw)
         kurt = kurtosis(frequency_raw)
-        col_p_to_p.append(float(p_to_p))
-        col_rms.append(float(rms_result))
-        col_std.append(float(std))
-        col_mean.append(float(abs(mean)))
-        col_skew.append(float(abs(skew_)))
-        col_var.append(float(abs(var)))
-        col_kurt.append(np.round(abs(kurt), 0))
+        col_p_to_p.append(p_to_p)
+        col_rms.append(rms_result)
+        col_std.append(std)
+        col_mean.append(mean)
+        col_skew.append(skew_)
+        col_var.append(var)
+        col_kurt.append(kurt)
         col_len.append(len(frequency_raw))
 
     # pandas t_sum 정리
@@ -52,9 +58,6 @@ def fft_t_sum(raw):
         'kurt': col_kurt,
         'len': col_len,
     })
-    print(t_sum_raw)
-    numpy_ = np.array(t_sum_raw)
-    print(numpy_)
     return t_sum_raw
 
 

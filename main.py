@@ -21,10 +21,10 @@ for f in a:  # 예를들어 201901, 201902 로 된 파일이면 2019_*
     colums = ['1CH', '2CH', '3CH', '4CH', '5CH']
     data = pd.read_csv(f, names=colums, header=None)
     # print(data)
-    shape_point = int(len(data) / 16000)
+    shape_point = int(len(data) / 80000)
     print(shape_point, '초')
-    data = data[:shape_point * 16000]
-    one_ch = data['1CH'].values.reshape(shape_point, 16000)
+    data = data[:shape_point * 80000]
+    one_ch = data['1CH'].values.reshape(shape_point, 80000)
     print(one_ch.shape)
     fft_sum = fft_t_sum(one_ch)
     all_data = all_data.append(fft_sum,ignore_index=True)

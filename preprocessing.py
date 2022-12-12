@@ -18,13 +18,12 @@ def fft_t_sum(raw):
     col_len = []
     for i in range(len(raw)):
 
-        fmax = 16000  # sampling frequency 1000 Hz
-        dt = 0.01       # sampling period
-        N = 16000    # length of signal
-
-        # Fourier spectrum
-        xf = np.fft.fft(raw[i])
-        frequency_raw =np.abs(xf[5:int(N / 2)])
+        dt = 10
+        # 10초 data
+        N = 80000
+        # fft 변환
+        xf = np.fft.fft(data) * dt
+        frequency_raw = np.abs(xf[10:int(N / 2 + 1)])
 
         # plt.figure(figsize=(16, 8))
         # plt.plot(frequency_raw)
